@@ -1,7 +1,7 @@
 var mysqlConfig = {
   host: 'localhost',
-  user: 'root',
-  password: '',
+  user: 'hisham',
+  password: '1234',
   database: 'Logistic'
 }
 
