@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0a3ydqo" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
   <bpmn:collaboration id="Collaboration_198rzeg">
-    <bpmn:participant id="Participant_1" name="Logistic" processRef="Process_1" />
+    <bpmn:participant id="Participant_1" name="Logistic" processRef="Process_shipping" />
     <bpmn:participant id="Participant_121vjx6" name="Payment Gateway" />
     <bpmn:participant id="Participant_1fqe3sz" name="Customer" />
     <bpmn:messageFlow id="MessageFlow_0do6k5x" sourceRef="Participant_1fqe3sz" targetRef="StartEvent_0s02ulu" />
@@ -10,7 +10,7 @@
     <bpmn:messageFlow id="MessageFlow_0azkpuh" sourceRef="Task_1i2412y" targetRef="Participant_121vjx6" />
     <bpmn:messageFlow id="MessageFlow_1rvc2dt" sourceRef="Task_0qimgb6" targetRef="Participant_1fqe3sz" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_1" name="Shipping Service" isExecutable="true">
+  <bpmn:process id="Process_shipping" name="Shipping Service" isExecutable="true">
     <bpmn:sequenceFlow id="SequenceFlow_1qjm1ih" sourceRef="StartEvent_0s02ulu" targetRef="Task_1wd5jh8" />
     <bpmn:sequenceFlow id="SequenceFlow_0d2u7hj" sourceRef="Task_1wd5jh8" targetRef="Task_1i2412y" />
     <bpmn:sequenceFlow id="SequenceFlow_1itx4q3" sourceRef="Task_1a8gl3z" targetRef="ExclusiveGateway_0ayfitu" />
