@@ -65,7 +65,7 @@
       <bpmn:incoming>SequenceFlow_07hbghf</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1x0epgn</bpmn:outgoing>
     </bpmn:sendTask>
-    <bpmn:sendTask id="Task_3" name="Create Warehousing Invoices" camunda:type="external" camunda:topic="create_storing_invoices">
+    <bpmn:sendTask id="Task_3" name="Create Warehousing Invoices" camunda:type="external" camunda:topic="create_warehousing_invoices">
       <bpmn:incoming>SequenceFlow_0ja471v</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1bwtojo</bpmn:outgoing>
     </bpmn:sendTask>
