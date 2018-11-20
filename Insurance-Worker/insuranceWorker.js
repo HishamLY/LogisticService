@@ -5,16 +5,16 @@ const config = { baseUrl: 'http://localhost:8080/engine-rest', use: logger };
 
 const client = new Client(config);
 
+client.subscribe('check_warehouse', async function ({ task, taskService }) {
+    let id = task.variables.get('request_id');
+    
+    console.log('Checking Warehouse Condition in request ' + id);
+});
+
 client.subscribe('check_shipment_condition', async function ({ task, taskService }) {
     let id = task.variables.get('request_id');
 
           console.log('Checking Shipment Condition in request ' + id);
-});
-
-client.subscribe('check_warehouse', async function ({ task, taskService }) {
-    let id = task.variables.get('request_id');
-
-          console.log('Checking Warehouse Condition in request ' + id);
 });
 
 client.subscribe('continue_shipping', async function ({ task, taskService }) {
