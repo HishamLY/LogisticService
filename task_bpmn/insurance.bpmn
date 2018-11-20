@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0iuwjy1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
   <bpmn:collaboration id="Collaboration_0wrx7d3">
-    <bpmn:participant id="Participant_1" name="Logistic" processRef="Process_3" />
+    <bpmn:participant id="insurance" name="Logistic" processRef="insurance-service" />
     <bpmn:participant id="Participant_18lvhan" name="Customer" />
     <bpmn:messageFlow id="MessageFlow_1vi7o5x" sourceRef="Participant_18lvhan" targetRef="StartEvent_0qdz15n" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_3" name="Insurance Service" isExecutable="true">
+  <bpmn:process id="insurance-service" name="Insurance Service" isExecutable="true">
     <bpmn:sequenceFlow id="SequenceFlow_1tgjlh8" name="Yes" sourceRef="ExclusiveGateway_0gy6r2s" targetRef="EndEvent_150hlaa">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${timeover}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -94,7 +94,7 @@
   <bpmn:message id="Message_1xo6slf" name="Insurance Details" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0wrx7d3">
-      <bpmndi:BPMNShape id="Participant_0id099i_di" bpmnElement="Participant_1">
+      <bpmndi:BPMNShape id="Participant_0id099i_di" bpmnElement="insurance">
         <dc:Bounds x="123" y="330" width="1099" height="417" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Participant_1uf71uw_di" bpmnElement="Participant_18lvhan">
