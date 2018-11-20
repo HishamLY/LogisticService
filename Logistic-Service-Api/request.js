@@ -82,7 +82,7 @@ requestRouter.put('/insurance/:id', function (req, res) {
     if (result.length == 0) {
       return res.status(404).send({
         success: false,
-        message: 'Warehousing Request does not exist'
+        message: 'Request does not exist'
       });
     } else {
       if (result[0]['insurance_type'] == 1) {
@@ -93,8 +93,7 @@ requestRouter.put('/insurance/:id', function (req, res) {
       }
     }
 
-    query_stmt = "UPDATE Request SET insurance = 1 WHERE id = ?";
-    query_stmt = mysql.format(query_stmt, insert);
+    query_stmt = "UPDATE Request SET insurance_type = 1 WHERE id = " + connection.escape(id);
     query = connection.query(query_stmt, function (error, result, fields) {
       if (error) {
         error_msg = error.sqlMessage;

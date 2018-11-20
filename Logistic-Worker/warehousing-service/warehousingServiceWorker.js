@@ -1,4 +1,4 @@
-const { Client, logger } = require('camunda-external-task-client-js');
+const { Client, logger, Variables } = require('camunda-external-task-client-js');
 const request = require('request');
 
 const config = { baseUrl: 'http://localhost:8080/engine-rest', use: logger };
@@ -50,33 +50,33 @@ client.subscribe('create_warehousing_request', async function ({ task, taskServi
 
     if (response.statusCode == 200) {
       console.log('Warehousing Request Created');
-      responseJSON = JSON.parse(body);
-      var id = responseJSON.id;
+      var id = body.id;
       processVariables.set('request_id', id);
       console.log('Request Id = ' + id);
     } else {
       console.log('Warehousing Request Failed to Create');
     }
+    taskService.complete(task, processVariables);
   });
-  await taskService.complete(task, processVariables);
 });
 
 client.subscribe('book_warehouse', async function ({ task, taskService }) {
   const warehouse_id = task.variables.get('warehouse_id');
   console.log(`Warehousing Request served at warehouse ${warehouse_id}`)
-  await taskService.complete(task);
+  taskService.complete(task);
 });
 
-client.subscribe('create_warehousing_invoice', async function ({ task, taskService }) {
-  let amount = task.variables.get('amount');
+client.subscribe('create_warehousing_invoices', async function ({ task, taskService }) {
+  let amount = task.variables.get('fee');
   let request_id = task.variables.get('request_id');
+  console.log(request_id);
   let customer_id = task.variables.get('customer_id');
 
   let processVariables = new Variables();
 
   processVariables.set('amount', amount);
-  processVariables.set('request_id', request_id);
-  processVariables.set('customer_id', customer_id);
+  // processVariables.set('request_id', request_id);
+  // processVariables.set('customer_id', customer_id);
   
   const requestJSON = {
     amount: amount,
@@ -100,20 +100,18 @@ client.subscribe('create_warehousing_invoice', async function ({ task, taskServi
 
     if (response.statusCode == 200) {
       console.log('Invoice Created');
-      responseJSON = JSON.parse(body);
-      var id = responseJSON.id;
+      var id = body.id;
       processVariables.set('invoice_id', id);
       console.log('Invoice Id = ' + id);
     } else {
       console.log('Invoice Failed to Create');
     }
+    taskService.complete(task, processVariables);
   });
-
-  await taskService.complete(task, processVariables);
 });
 
-client.subscribe('notify_payment', async function ({ task, taskService }) {
-  const invoice_id = task.variables.get('invoice_id');
-  console.log(`Invoice with id ${warehouse_id} is sent to customer`)
-  await taskService.complete(task);
-});
+// client.subscribe('notify_payment', async function ({ task, taskService }) {
+//   const invoice_id = task.variables.get('invoice_id');
+//   console.log(`Invoice with id ${invoice_id} is sent to customer`)
+//   taskService.complete(task);
+// });
