@@ -106,11 +106,11 @@ client.subscribe('create_shipping_invoices', async function ({ task, taskService
   });
 });
 
-client.subscribe('notify_payment', async function ({ task, taskService }) {
-  const invoice_id = task.variables.get('invoice_id');
-  console.log(`Invoice with id ${invoice_id} is sent to customer`);
-  taskService.complete(task);
-});
+// client.subscribe('notify_payment', async function ({ task, taskService }) {
+//   const invoice_id = task.variables.get('invoice_id');
+//   console.log(`Invoice with id ${invoice_id} is sent to customer`);
+//   taskService.complete(task);
+// });
 
 client.subscribe('send_to_destination', async function ({task, taskService}) {
   const request_id = task.variables.get('request_id');
