@@ -10,7 +10,6 @@ client.subscribe('create_shipment', async function ({ task, taskService }) {
   let fee = task.variables.get('fee');
   let quantity = task.variables.get('quantity');
   let customer_id = task.variables.get('customer_id');
-  let request_id = task.variables.get('request_id');
   let location = task.variables.get('location');
   let weight = task.variables.get('weight');
   let destination_address = task.variables.get('destination_address');
@@ -22,7 +21,6 @@ client.subscribe('create_shipment', async function ({ task, taskService }) {
   processVariables.set('fee', fee);
   processVariables.set('quantity', quantity);
   processVariables.set('customer_id', customer_id);
-  processVariables.set('request_id', request_id);
   processVariables.set('location', location);
   processVariables.set('weight', weight);
   processVariables.set('destination_address', destination_address);
@@ -56,8 +54,7 @@ client.subscribe('create_shipment', async function ({ task, taskService }) {
 
     if (response.statusCode == 200) {
       console.log('Shipping Request Created');
-      responseJSON = JSON.parse(body);
-      var id = responseJSON.id;
+      var id = body.id;
       processVariables.set('request_id', id);
       console.log('Request Id = ' + id);
     } else {
@@ -100,8 +97,7 @@ client.subscribe('create_shipping_invoices', async function ({ task, taskService
 
     if (response.statusCode == 200) {
       console.log('Invoice Created');
-      responseJSON = JSON.parse(body);
-      var id = responseJSON.id;
+      var id = body.id;
       processVariables.set('invoice_id', id);
       console.log('Invoice Id = ' + id);
     } else {
