@@ -45,7 +45,7 @@ client.subscribe('create_warehousing_request', async function ({ task, taskServi
     json: requestJSON
   }
 
-  request.post(options, function (error, response, body) {
+  request(options, function (error, response, body) {
     if (error) return error;
 
     if (response.statusCode == 200) {
@@ -95,7 +95,7 @@ client.subscribe('create_warehousing_invoice', async function ({ task, taskServi
     json: requestJSON
   }
 
-  request.post(options, function (error, response, body) {
+  request(options, function (error, response, body) {
     if (error) return error;
 
     if (response.statusCode == 200) {
