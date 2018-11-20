@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const mysqlConfig = require('./mysql-conf');
+const uuidv4 = require('uuid/v4');
 
 const connection = mysql.createConnection(mysqlConfig);
 connection.connect();
@@ -58,7 +59,7 @@ invoiceRouter.get('/:id', function (req, res) {
     } else {
       return res.status(200).send({
         success: true,
-        result: result
+        result: result[0]
       });
     }
   });
@@ -66,8 +67,9 @@ invoiceRouter.get('/:id', function (req, res) {
 
 // POST Invoice
 invoiceRouter.post('/', function (req, res) {
+  const id = uuidv4();
   var query_stmt = "INSERT INTO Invoice SET id = ?, amount = ?, request_id = ?, customer_id = ?";
-  var insert = [req.body.id, parseInt(req.body.amount, 10), req.body.requestId, req.body.customerId];
+  var insert = [id, parseInt(req.body.amount, 10), req.body.request_id, req.body.customer_id];
   query_stmt = mysql.format(query_stmt, insert);
   var query = connection.query(query_stmt, function (error, result, fields) {
     if (error) {
@@ -78,7 +80,8 @@ invoiceRouter.post('/', function (req, res) {
     }
 
     return res.status(200).send({
-      success: true
+      success: true,
+      id: id
     });
   });
 });
@@ -102,8 +105,8 @@ invoiceRouter.put('/:id', function (req, res) {
       });
     }
 
-    query_stmt = "UPDATE Invoice SET amount = ?, request_id = ?, customer_id = ?";
-    var insert = [parseInt(req.body.amount, 10), req.body.requestId, req.body.customerId];
+    query_stmt = "UPDATE Invoice SET amount = ?, request_id = ?, customer_id = ? WHERE id = ?";
+    var insert = [parseInt(req.body.amount, 10), req.body.request_id, req.body.customer_id, id];
     query_stmt = mysql.format(query_stmt, insert);
     query = connection.query(query_stmt, function (error, result, fields) {
       if (error) {
@@ -121,21 +124,6 @@ invoiceRouter.put('/:id', function (req, res) {
 });
 
 // DELETE Invoice
-invoiceRouter.delete('/:id', function (req, res) {
-  const id = req.params.id;
-  var query_stmt = "DELETE FROM Invoice WHERE id = " + connection.escape(id);
-  var query = connection.query(query_stmt, function (error, result, fields) {
-    if (error) {
-      error_msg = error.sqlMessage;
-      return res.status(400).send({
-        error: error_msg
-      });
-    }
-
-    return res.status(200).send({
-      success: true
-    });
-  });
-});
+// Invoice cannot be deleted
 
 module.exports = invoiceRouter;

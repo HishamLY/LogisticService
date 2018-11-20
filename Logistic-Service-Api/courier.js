@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const mysqlConfig = require('./mysql-conf');
+const uuidv4 = require('uuid/v4');
 
 const connection = mysql.createConnection(mysqlConfig);
 connection.connect();
@@ -57,7 +58,7 @@ courierRouter.get('/:id', function (req, res) {
     } else {
       return res.status(200).send({
         success: true,
-        result: result
+        result: result[0]
       });
     }
   });
@@ -65,8 +66,9 @@ courierRouter.get('/:id', function (req, res) {
 
 // POST Courier
 courierRouter.post('/', function (req, res) {
+  var id = uuidv4();
   var query_stmt = "INSERT INTO Courier SET id = ?, name = ?, courier_type = ?";
-  var insert = [req.body.id, req.body.name, parseInt(req.body.courierType, 10)];
+  var insert = [id, req.body.name, parseInt(req.body.courier_type, 10)];
   query_stmt = mysql.format(query_stmt, insert);
   var query = connection.query(query_stmt, function (error, result, fields) {
     if (error) {
@@ -77,7 +79,8 @@ courierRouter.post('/', function (req, res) {
     }
 
     return res.status(200).send({
-      success: true
+      success: true,
+      id: id
     });
   });
 });
@@ -101,8 +104,8 @@ courierRouter.put('/:id', function (req, res) {
       });
     }
 
-    query_stmt = "UPDATE Courier SET name = ?, courier_type = ?";
-    var insert = [req.body.name, parseInt(req.body.courierType, 10)];
+    query_stmt = "UPDATE Courier SET name = ?, courier_type = ? WHERE id = ?";
+    var insert = [req.body.name, parseInt(req.body.courier_type, 10), id];
     query_stmt = mysql.format(query_stmt, insert);
     query = connection.query(query_stmt, function (error, result, fields) {
       if (error) {

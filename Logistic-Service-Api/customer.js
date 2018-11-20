@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const mysqlConfig = require('./mysql-conf');
+const uuidv4 = require('uuid/v4');
 
 const connection = mysql.createConnection(mysqlConfig);
 connection.connect();
@@ -58,7 +59,7 @@ customerRouter.get('/:id', function (req, res) {
     } else {
       return res.status(200).send({
         success: true,
-        result: result
+        result: result[0]
       });
     }
   });
@@ -66,8 +67,9 @@ customerRouter.get('/:id', function (req, res) {
 
 // POST Customer
 customerRouter.post('/', function (req, res) {
+  const id = uuidv4();
   var query_stmt = "INSERT INTO Customer SET id = ?, name = ?, customer_type = ?, address = ?";
-  var insert = [req.body.id, req.body.name, parseInt(req.body.customerType, 10), req.body.address];
+  var insert = [id, req.body.name, parseInt(req.body.customer_type, 10), req.body.address];
   query_stmt = mysql.format(query_stmt, insert);
   var query = connection.query(query_stmt, function (error, result, fields) {
     if (error) {
@@ -78,7 +80,8 @@ customerRouter.post('/', function (req, res) {
     }
 
     return res.status(200).send({
-      success: true
+      success: true,
+      id: id
     });
   });
 });
@@ -102,8 +105,8 @@ customerRouter.put('/:id', function (req, res) {
       });
     }
 
-    query_stmt = "UPDATE Customer SET name = ?, customer_type = ?, address = ?";
-    var insert = [req.body.name, parseInt(req.body.customerType, 10), req.body.address];
+    query_stmt = "UPDATE Customer SET name = ?, customer_type = ?, address = ? WHERE id = ?";
+    var insert = [req.body.name, parseInt(req.body.customer_type, 10), req.body.address, id];
     query_stmt = mysql.format(query_stmt, insert);
     query = connection.query(query_stmt, function (error, result, fields) {
       if (error) {

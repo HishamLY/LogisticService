@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const mysqlConfig = require('./mysql-conf');
+const uuidv4 = require('uuid/v4');
 
 const connection = mysql.createConnection(mysqlConfig);
 connection.connect();
@@ -66,8 +67,9 @@ warehouseRouter.get('/:id', function (req, res) {
 
 // POST Warehouse
 warehouseRouter.post('/', function (req, res) {
+  const id = uuidv4();
   var query_stmt = "INSERT INTO Warehouse SET id = ?, address = ?, capacity = ?, availability = ?";
-  var insert = [req.body.id, req.body.address, parseInt(req.body.capacity, 10), parseInt(req.body.availability, 10)];
+  var insert = [id, req.body.address, parseInt(req.body.capacity, 10), parseInt(req.body.availability, 10)];
   query_stmt = mysql.format(query_stmt, insert);
   var query = connection.query(query_stmt, function (error, result, fields) {
     if (error) {
@@ -102,8 +104,8 @@ warehouseRouter.put('/:id', function (req, res) {
       });
     }
 
-    query_stmt = "UPDATE Warehouse SET address = ?, capacity = ?, availability = ?";
-    var insert = [req.body.address, parseInt(req.body.capacity, 10), parseInt(req.body.availability, 10)];
+    query_stmt = "UPDATE Warehouse SET address = ?, capacity = ?, availability = ? WHERE id = ?";
+    var insert = [req.body.address, parseInt(req.body.capacity, 10), parseInt(req.body.availability, 10), id];
     query_stmt = mysql.format(query_stmt, insert);
     query = connection.query(query_stmt, function (error, result, fields) {
       if (error) {
