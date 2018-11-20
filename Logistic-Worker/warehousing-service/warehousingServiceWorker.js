@@ -28,7 +28,7 @@ client.subscribe('create_warehousing_request', async function ({ task, taskServi
     status: status,
     fee: fee,
     quantity: quantity,
-    customer_id: customer_data['id'],
+    customer_id: customer_id,
     warehouse_id: warehouse_id,
     start_date: start_date,
     end_date: end_date
