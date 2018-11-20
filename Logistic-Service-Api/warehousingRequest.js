@@ -55,7 +55,7 @@ warehousingRequestRouter.get('/:id', function (req, res) {
 // POST Warehousing Request
 warehousingRequestRouter.post('/', function (req, res) {
   var id = uuidv4();
-  var query_stmt = "INSERT INTO Request SET id = ?, status = ?, fee = ?, quantity = ?, customer_id = ?, request_type = ?";
+  var query_stmt = "INSERT INTO Request SET id = ?, status = ?, fee = ?, quantity = ?, customer_id = ?, type = ?";
   var insert = [
     id,
     parseInt(req.body.status, 10),
