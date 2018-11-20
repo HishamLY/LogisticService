@@ -59,8 +59,8 @@ client.subscribe('create_shipment', async function ({ task, taskService }) {
     } else {
       console.log('Shipping Request Failed to Create');
     }
+    taskService.complete(task, processVariables);
   });
-  taskService.complete(task, processVariables);
 });
 
 client.subscribe('create_shipping_invoices', async function ({ task, taskService }) {
@@ -102,17 +102,18 @@ client.subscribe('create_shipping_invoices', async function ({ task, taskService
     } else {
       console.log('Invoice Failed to Create');
     }
+    taskService.complete(task, processVariables);
   });
-
-  taskService.complete(task, processVariables);
 });
 
 client.subscribe('notify_payment', async function ({ task, taskService }) {
   const invoice_id = task.variables.get('invoice_id');
-  console.log(`Invoice with id ${invoice_id} is sent to customer`)
+  console.log(`Invoice with id ${invoice_id} is sent to customer`);
   taskService.complete(task);
 });
 
 client.subscribe('send_to_destination', async function ({task, taskService}) {
-  console.log(`Shipping with id ${request_id} is sent to destination`)
+  const request_id = task.variables.get('request_id');
+  console.log(`Shipping with id ${request_id} is sent to destination`);
+  taskService.complete(task);
 });

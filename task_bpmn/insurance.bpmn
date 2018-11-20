@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0iuwjy1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
   <bpmn:collaboration id="Collaboration_0wrx7d3">
-    <bpmn:participant id="Participant_1" name="Logistic" processRef="Process_1" />
+    <bpmn:participant id="Participant_1" name="Logistic" processRef="Process_3" />
     <bpmn:participant id="Participant_18lvhan" name="Customer" />
     <bpmn:messageFlow id="MessageFlow_1vi7o5x" sourceRef="Participant_18lvhan" targetRef="StartEvent_0qdz15n" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_1" name="Insurance Service" isExecutable="true">
+  <bpmn:process id="Process_3" name="Insurance Service" isExecutable="true">
     <bpmn:sequenceFlow id="SequenceFlow_1tgjlh8" name="Yes" sourceRef="ExclusiveGateway_0gy6r2s" targetRef="EndEvent_150hlaa">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${timeover}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_1dgliv6" sourceRef="IntermediateThrowEvent_0peyfum" targetRef="Task_1knfr8u" />
     <bpmn:sequenceFlow id="SequenceFlow_16hgrrk" name="No" sourceRef="ExclusiveGateway_0gy6r2s" targetRef="IntermediateThrowEvent_0peyfum">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!timeover}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not timeover}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0t4ycox" sourceRef="Task_1knfr8u" targetRef="ExclusiveGateway_0gy6r2s" />
     <bpmn:sequenceFlow id="SequenceFlow_1wbfyt5" name="No" sourceRef="ExclusiveGateway_1j7e8ie" targetRef="Task_1knfr8u">
@@ -23,10 +23,10 @@
     <bpmn:sequenceFlow id="SequenceFlow_1qx4okk" sourceRef="Task_04fnjgg" targetRef="ExclusiveGateway_0sevpbg" />
     <bpmn:sequenceFlow id="SequenceFlow_08xful6" sourceRef="Task_1hczqo4" targetRef="ExclusiveGateway_0sevpbg" />
     <bpmn:sequenceFlow id="SequenceFlow_1b4hee8" name="No" sourceRef="ExclusiveGateway_0sevpbg" targetRef="ExclusiveGateway_1i7g3xj">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!destination}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not destination}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0abdk88" name="No" sourceRef="ExclusiveGateway_1i7g3xj" targetRef="Task_04fnjgg">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!checkpoint}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not checkpoint}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0qd0zqt" name="Yes" sourceRef="ExclusiveGateway_1i7g3xj" targetRef="Task_1hczqo4">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${checkpoint}</bpmn:conditionExpression>

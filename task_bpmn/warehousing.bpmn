@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1jrxz65" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
   <bpmn:collaboration id="Collaboration_0315ffc">
-    <bpmn:participant id="Participant_1" name="Logistic" processRef="Process_1" />
+    <bpmn:participant id="Participant_1" name="Logistic" processRef="Process_2" />
     <bpmn:participant id="Participant_0ljzt6l" name="Customerhousi" />
     <bpmn:participant id="Participant_0dtleze" name="Payment Gateway" />
     <bpmn:messageFlow id="MessageFlow_1ozln76" sourceRef="Task_3" targetRef="Participant_0ljzt6l" />
@@ -13,7 +13,7 @@
   <bpmn:message id="Message_0ccxefy" name="Customer_Storing_Details" />
   <bpmn:signal id="Signal_14q7ogh" name="Storage Limit Period" />
   <bpmn:message id="Message_1wuqnss" name="Payment Confirmation" />
-  <bpmn:process id="Process_1" name="Storing Request" isExecutable="true">
+  <bpmn:process id="Process_2" name="Storing Request" isExecutable="true">
     <bpmn:sequenceFlow id="SequenceFlow_13jb9oq" sourceRef="StartEvent" targetRef="Task_1" />
     <bpmn:sequenceFlow id="SequenceFlow_1bwtojo" sourceRef="Task_3" targetRef="Task_4" />
     <bpmn:sequenceFlow id="SequenceFlow_1x0epgn" sourceRef="Task_4" targetRef="Task_5" />
@@ -32,6 +32,10 @@
     <bpmn:sequenceFlow id="SequenceFlow_0h9hst8" sourceRef="Task_1" targetRef="Task_2" />
     <bpmn:sequenceFlow id="SequenceFlow_0ja471v" sourceRef="Task_2" targetRef="Task_3" />
     <bpmn:callActivity id="Task_7" name="Shipping Service" calledElement="shipping" camunda:calledElementBinding="deployment">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0lhv0p0</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1cmrbdu</bpmn:outgoing>
     </bpmn:callActivity>
