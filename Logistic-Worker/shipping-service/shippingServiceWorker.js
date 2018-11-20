@@ -31,7 +31,6 @@ client.subscribe('create_shipment', async function ({ task, taskService }) {
     fee: fee,
     quantity: quantity,
     customer_id: customer_id,
-    request_id: request_id,
     location: location,
     weight: weight,
     destination_address: destination_address,
@@ -76,7 +75,7 @@ client.subscribe('create_shipping_invoices', async function ({ task, taskService
   processVariables.set('customer_id', customer_id);
   
   const requestJSON = {
-    fee: fee,
+    amount: fee,
     request_id: request_id,
     customer_id: customer_id,
   }
