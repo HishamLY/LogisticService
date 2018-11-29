@@ -2,7 +2,7 @@ const { Variables } = require('camunda-external-task-client-js');
 const request = require('request');
 
 async function createWarehousingRequest({ task, taskService }) {
-  let status = task.variables.get('status');
+  let status = 0;
   let fee = task.variables.get('fee');
   let quantity = task.variables.get('quantity');
   let customerId = task.variables.get('customerId');
@@ -107,7 +107,33 @@ async function createWarehousingInvoices({ task, taskService }) {
 
 async function notifyPayment({ task, taskService }) {
   const invoiceId = task.variables.get('invoiceId');
+  const requestId = task.variables.get('requestId0');
   console.log(`Invoice with id ${invoice_id} is sent to customer`)
+  
+  // Update Request Status
+  const requestJSON = {
+    status: 1
+  }
+  const headers = {
+    'Content-Type': 'application/json'
+  }
+  const options = {
+    url: 'http://127.0.0.1:3000/api/v1/shipping-request/' + requestId,
+    method: 'PUT',
+    headers: headers,
+    json: requestJSON
+  }
+
+  request(options, function (error, response, body) {
+    if (error) return error;
+
+    if (response.statusCode == 200) {
+      console.log('Shipping Status Updated');
+    } else {
+      console.log('Shipping Status Failed to Update');
+    }
+  });
+
   // Notify payment via email to customer
   taskService.complete(task);
 }

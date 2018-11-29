@@ -2,7 +2,7 @@ const { Variables } = require('camunda-external-task-client-js');
 const request = require('request');
 
 async function createShipment({ task, taskService }) {
-  let status = task.variables.get('status');
+  let status = 0;
   let fee = task.variables.get('fee');
   let quantity = task.variables.get('quantity');
   let customerId = task.variables.get('customerId');
@@ -44,7 +44,7 @@ async function createShipment({ task, taskService }) {
     json: requestJSON
   }
 
-  request.post(options, function (error, response, body) {
+  request(options, function (error, response, body) {
     if (error) return error;
 
     if (response.statusCode == 201) {
@@ -87,7 +87,7 @@ async function createShippingInvoices({ task, taskService }) {
     json: requestJSON
   }
 
-  request.post(options, function (error, response, body) {
+  request(options, function (error, response, body) {
     if (error) return error;
 
     if (response.statusCode == 201) {
@@ -105,7 +105,33 @@ async function createShippingInvoices({ task, taskService }) {
 
 async function notifyPayment({ task, taskService }) {
   const invoiceId = task.variables.get('invoiceId');
+  const requestId = task.variables.get('requestId');
+
   console.log(`Invoice with id ${invoiceId} is sent to customer`);
+  // Update Request Status
+  const requestJSON = {
+    status: 1
+  }
+  const headers = {
+    'Content-Type': 'application/json'
+  }
+  const options = {
+    url: 'http://127.0.0.1:3000/api/v1/shipping-request/' + requestId,
+    method: 'PUT',
+    headers: headers,
+    json: requestJSON
+  }
+
+  request(options, function (error, response, body) {
+    if (error) return error;
+
+    if (response.statusCode == 200) {
+      console.log('Shipping Status Updated');
+    } else {
+      console.log('Shipping Status Failed to Update');
+    }
+  });
+
   // Notify payment via email
   taskService.complete(task);
 }
@@ -113,6 +139,32 @@ async function notifyPayment({ task, taskService }) {
 async function sendToDestination({task, taskService}) {
   const requestId = task.variables.get('requestId');
   console.log(`Shipping with id ${requestId} is sent to destination`);
+
+  console.log(`Invoice with id ${invoiceId} is sent to customer`);
+  // Update Request Status
+  const requestJSON = {
+    status: 2
+  }
+  const headers = {
+    'Content-Type': 'application/json'
+  }
+  const options = {
+    url: 'http://127.0.0.1:3000/api/v1/shipping-request/' + requestId,
+    method: 'PUT',
+    headers: headers,
+    json: requestJSON
+  }
+
+  request(options, function (error, response, body) {
+    if (error) return error;
+
+    if (response.statusCode == 200) {
+      console.log('Shipping Status Updated');
+    } else {
+      console.log('Shipping Status Failed to Update');
+    }
+  });
+
   taskService.complete(task);
 }
 
