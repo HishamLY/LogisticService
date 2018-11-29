@@ -125,11 +125,7 @@ async function notifyPayment({ task, taskService }) {
   request(options, function (error, response, body) {
     if (error) return error;
 
-    if (response.statusCode == 200) {
-      console.log('Shipping Status Updated');
-    } else {
-      console.log('Shipping Status Failed to Update');
-    }
+    console.log('Shipping Status Updated');
   });
 
   // Notify payment via email
@@ -139,8 +135,7 @@ async function notifyPayment({ task, taskService }) {
 async function sendToDestination({task, taskService}) {
   const requestId = task.variables.get('requestId');
   console.log(`Shipping with id ${requestId} is sent to destination`);
-
-  console.log(`Invoice with id ${invoiceId} is sent to customer`);
+  
   // Update Request Status
   const requestJSON = {
     status: 2
@@ -158,11 +153,7 @@ async function sendToDestination({task, taskService}) {
   request(options, function (error, response, body) {
     if (error) return error;
 
-    if (response.statusCode == 200) {
-      console.log('Shipping Status Updated');
-    } else {
-      console.log('Shipping Status Failed to Update');
-    }
+    console.log('Shipping Status Updated');
   });
 
   taskService.complete(task);

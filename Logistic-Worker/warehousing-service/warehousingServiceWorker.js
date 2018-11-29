@@ -127,11 +127,7 @@ async function notifyPayment({ task, taskService }) {
   request(options, function (error, response, body) {
     if (error) return error;
 
-    if (response.statusCode == 200) {
-      console.log('Shipping Status Updated');
-    } else {
-      console.log('Shipping Status Failed to Update');
-    }
+    console.log('Warehousing Status Updated');
   });
 
   // Notify payment via email to customer
