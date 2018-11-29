@@ -1,40 +1,36 @@
-const { Client, logger, Variables } = require('camunda-external-task-client-js');
+const { Variables } = require('camunda-external-task-client-js');
 const request = require('request');
 
-const config = { baseUrl: 'http://localhost:8080/engine-rest', use: logger };
-
-const client = new Client(config);
-
-client.subscribe('create_shipment', async function ({ task, taskService }) {
+async function createShipment({ task, taskService }) {
   let status = task.variables.get('status');
   let fee = task.variables.get('fee');
   let quantity = task.variables.get('quantity');
-  let customer_id = task.variables.get('customer_id');
+  let customerId = task.variables.get('customerId');
   let location = task.variables.get('location');
   let weight = task.variables.get('weight');
-  let destination_address = task.variables.get('destination_address');
-  let courier_id = task.variables.get('courier_id');
+  let destinationAddress = task.variables.get('destinationAddress');
+  let courierId = task.variables.get('courierId');
 
   let processVariables = new Variables();
 
   processVariables.set('status', status);
   processVariables.set('fee', fee);
   processVariables.set('quantity', quantity);
-  processVariables.set('customer_id', customer_id);
+  processVariables.set('customerId', customerId);
   processVariables.set('location', location);
   processVariables.set('weight', weight);
-  processVariables.set('destination_address', destination_address);
-  processVariables.set('courier_id', courier_id);
+  processVariables.set('destinationAddress', destinationAddress);
+  processVariables.set('courierId', courierId);
 
   const requestJSON = {
     status: status,
     fee: fee,
     quantity: quantity,
-    customer_id: customer_id,
+    customerId: customerId,
     location: location,
     weight: weight,
-    destination_address: destination_address,
-    courier_id: courier_id
+    destinationAddress: destinationAddress,
+    courierId: courierId
   }
 
   const headers = {
@@ -51,33 +47,33 @@ client.subscribe('create_shipment', async function ({ task, taskService }) {
   request.post(options, function (error, response, body) {
     if (error) return error;
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       console.log('Shipping Request Created');
       var id = body.id;
-      processVariables.set('request_id', id);
+      processVariables.set('requestId', id);
       console.log('Request Id = ' + id);
     } else {
       console.log('Shipping Request Failed to Create');
     }
     taskService.complete(task, processVariables);
   });
-});
+}
 
-client.subscribe('create_shipping_invoices', async function ({ task, taskService }) {
+async function createShippingInvoices({ task, taskService }) {
   let fee = task.variables.get('fee');
-  let request_id = task.variables.get('request_id');
-  let customer_id = task.variables.get('customer_id');
+  let requestId = task.variables.get('requestId');
+  let customerId = task.variables.get('customerId');
 
   let processVariables = new Variables();
 
   processVariables.set('fee', fee);
-  processVariables.set('request_id', request_id);
-  processVariables.set('customer_id', customer_id);
+  processVariables.set('requestId', requestId);
+  processVariables.set('customerId', customerId);
   
   const requestJSON = {
     amount: fee,
-    request_id: request_id,
-    customer_id: customer_id,
+    requestId: requestId,
+    customerId: customerId,
   }
 
   const headers = {
@@ -94,26 +90,35 @@ client.subscribe('create_shipping_invoices', async function ({ task, taskService
   request.post(options, function (error, response, body) {
     if (error) return error;
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       console.log('Invoice Created');
       var id = body.id;
-      processVariables.set('invoice_id', id);
+      processVariables.set('invoiceId', id);
       console.log('Invoice Id = ' + id);
     } else {
       console.log('Invoice Failed to Create');
     }
+    // Send invoice via email to customer
     taskService.complete(task, processVariables);
   });
-});
+}
 
-// client.subscribe('notify_payment', async function ({ task, taskService }) {
-//   const invoice_id = task.variables.get('invoice_id');
-//   console.log(`Invoice with id ${invoice_id} is sent to customer`);
-//   taskService.complete(task);
-// });
-
-client.subscribe('send_to_destination', async function ({task, taskService}) {
-  const request_id = task.variables.get('request_id');
-  console.log(`Shipping with id ${request_id} is sent to destination`);
+async function notifyPayment({ task, taskService }) {
+  const invoiceId = task.variables.get('invoiceId');
+  console.log(`Invoice with id ${invoiceId} is sent to customer`);
+  // Notify payment via email
   taskService.complete(task);
-});
+}
+
+async function sendToDestination({task, taskService}) {
+  const requestId = task.variables.get('requestId');
+  console.log(`Shipping with id ${requestId} is sent to destination`);
+  taskService.complete(task);
+}
+
+module.exports = {
+  createShipment,
+  createShippingInvoices,
+  notifyPayment,
+  sendToDestination
+}

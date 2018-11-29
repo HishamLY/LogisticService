@@ -1,45 +1,42 @@
+const { 
+        createShipment,
+        createShippingInvoices,
+        notifyPayment,
+        sendToDestination
+      } = require('./shipping-service/shippingServiceWorker');
+
+const {
+        createWarehousingRequest,
+        bookWarehouse,
+        createWarehousingInvoices,
+      } = require('./warehousing-service/warehousingServiceWorker');
+
+const {
+        createInsurance,
+        checkWarehouse,
+        continueShipping
+      } = require('./insurance-service/insuranceServiceWorker');
+
 const { Client, logger } = require('camunda-external-task-client-js');
-const http =require('http');
-
-// configuration for the Client:
-//  - 'baseUrl': url to the Process Engine
-//  - 'logger': utility to automatically log important events
-const config = { baseUrl: 'http://localhost:8080/engine-rest', use: logger };
-
-// create a Client instance with custom configuration
+const config = { baseUrl: 'http://localhost:8080/engine-rest' };
 const client = new Client(config);
 
-// susbscribe to the topic: 'charge-card'
-client.subscribe('test', async function({ task, taskService }) {
-  // Put your business logic here
+// Shipping Service
 
-  // Get a process variable
-  const name = task.variables.get('name');
-  const item = task.variables.get('item');
+client.subscribe('create_shipment', createShipment);
+client.subscribe('create_shipping_invoices', createShippingInvoices);
+client.subscribe('notify_shipping_payment', notifyPayment);
+client.subscribe('send_to_destination', sendToDestination);
 
-  http.get('http://localhost:3000/api/v1/customer/1', (resp) => {
-	  let data = '';
+// Warehousing Service
 
-	  // A chunk of data has been recieved.
-	  resp.on('data', (chunk) => {
-	    data += chunk;
-	  });
+client.subscribe('create_warehousing_request', createWarehousingRequest);
+client.subscribe('book_warehouse', bookWarehouse);
+client.subscribe('notify_payment', notifyPayment);
+client.subscribe('create_warehousing_invoices', createWarehousingInvoices);
 
-	  // The whole response has been received. Print out the result.
-	  resp.on('end', () => {
-	  	console.log(data);
-	    console.log(JSON.parse(data).explanation);
-	  });
+// Insurance Service
 
-	}).on("error", (err) => {
-	  console.log("Error: " + err.message);
-	});
-
-  // console.log(`Charging credit card with an amount of ${amount}€ for the item '${item}'...`);
-
-  console.log(`test aja, si ${name} membeli ${item}`);
-
-  // Complete the task
-  await taskService.complete(task);
-});
-
+client.subscribe('create_insurance', createInsurance);
+client.subscribe('check_warehouse', checkWarehouse);
+client.subscribe('continue_shipping', continueShipping);
