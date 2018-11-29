@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1jrxz65" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
   <bpmn:collaboration id="Collaboration_0315ffc">
-    <bpmn:participant id="Participant_1" name="Logistic" processRef="Process_2" />
+    <bpmn:participant id="warehousing" name="Logistic" processRef="warehousing-service" />
     <bpmn:participant id="Participant_0ljzt6l" name="Customerhousi" />
     <bpmn:participant id="Participant_0dtleze" name="Payment Gateway" />
     <bpmn:messageFlow id="MessageFlow_1ozln76" sourceRef="Task_3" targetRef="Participant_0ljzt6l" />
@@ -12,18 +12,18 @@
   </bpmn:collaboration>
   <bpmn:message id="Message_0ccxefy" name="Customer_Storing_Details" />
   <bpmn:signal id="Signal_14q7ogh" name="Storage Limit Period" />
-  <bpmn:message id="Message_1wuqnss" name="Payment Confirmation" />
-  <bpmn:process id="Process_2" name="Storing Request" isExecutable="true">
+  <bpmn:message id="Message_1wuqnss" name="payment confirmation" />
+  <bpmn:process id="warehousing-service" name="Warehousing Service" isExecutable="true">
     <bpmn:sequenceFlow id="SequenceFlow_13jb9oq" sourceRef="StartEvent" targetRef="Task_1" />
     <bpmn:sequenceFlow id="SequenceFlow_1bwtojo" sourceRef="Task_3" targetRef="Task_4" />
     <bpmn:sequenceFlow id="SequenceFlow_1x0epgn" sourceRef="Task_4" targetRef="Task_5" />
     <bpmn:sequenceFlow id="SequenceFlow_1v75zup" sourceRef="Task_5" targetRef="ExclusiveGateway_17bpt5y" />
     <bpmn:sequenceFlow id="SequenceFlow_0001m8j" name="No" sourceRef="ExclusiveGateway_17bpt5y" targetRef="IntermediateThrowEvent_1">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not has_been_paid}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not paid}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_07hbghf" sourceRef="IntermediateThrowEvent_1" targetRef="Task_4" />
     <bpmn:sequenceFlow id="SequenceFlow_0qft1ft" name="Yes" sourceRef="ExclusiveGateway_17bpt5y" targetRef="Task_6">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{has_been_paid}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{paid}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_1cutttq" sourceRef="Task_6" targetRef="ExclusiveGateway_0xicw1a" />
     <bpmn:sequenceFlow id="SequenceFlow_0lhv0p0" name="Yes" sourceRef="ExclusiveGateway_0xicw1a" targetRef="Task_7">
@@ -31,7 +31,7 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0h9hst8" sourceRef="Task_1" targetRef="Task_2" />
     <bpmn:sequenceFlow id="SequenceFlow_0ja471v" sourceRef="Task_2" targetRef="Task_3" />
-    <bpmn:callActivity id="Task_7" name="Shipping Service" calledElement="shipping" camunda:calledElementBinding="deployment">
+    <bpmn:callActivity id="Task_7" name="Shipping Service" calledElement="shipping-service">
       <bpmn:extensionElements>
         <camunda:in variables="all" />
         <camunda:out variables="all" />
@@ -44,7 +44,12 @@
       <bpmn:outgoing>SequenceFlow_0lhv0p0</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_15wko1f</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:userTask id="Task_6" name="Place Goods in Warehouse" camunda:assignee="John" camunda:candidateUsers="Clerk" camunda:candidateGroups="Logistics">
+    <bpmn:userTask id="Task_6" name="Place Goods in Warehouse" camunda:assignee="demo" camunda:candidateUsers="demo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="need_shipping" label="need_shipping" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0qft1ft</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1cutttq</bpmn:outgoing>
     </bpmn:userTask>
@@ -53,13 +58,6 @@
       <bpmn:outgoing>SequenceFlow_0001m8j</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_0qft1ft</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1" name="Payment Timeout">
-      <bpmn:incoming>SequenceFlow_0001m8j</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_07hbghf</bpmn:outgoing>
-      <bpmn:timerEventDefinition>
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">60 seconds</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:intermediateCatchEvent>
     <bpmn:receiveTask id="Task_5" name="Check Payment" messageRef="Message_1wuqnss">
       <bpmn:incoming>SequenceFlow_1x0epgn</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1v75zup</bpmn:outgoing>
@@ -91,7 +89,12 @@
     <bpmn:sequenceFlow id="SequenceFlow_0img6ox" name="No" sourceRef="ExclusiveGateway_0cm8iri" targetRef="Task_8">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not renewed}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="Task_8" name="Return Goods to Customer" camunda:assignee="John" camunda:candidateUsers="Clerk" camunda:candidateGroups="Logistics">
+    <bpmn:userTask id="Task_8" name="Return Goods to Customer" camunda:assignee="demo" camunda:candidateUsers="demo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="return_to_customer" label="return_to_customer" type="boolean" defaultValue="true" />
+        </camunda:formData>
+      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0img6ox</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1wwzqrn</bpmn:outgoing>
     </bpmn:userTask>
@@ -116,11 +119,18 @@
       <bpmn:incoming>SequenceFlow_0h9hst8</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ja471v</bpmn:outgoing>
     </bpmn:serviceTask>
+    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1" name="Payment Timeout">
+      <bpmn:incoming>SequenceFlow_0001m8j</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_07hbghf</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
   </bpmn:process>
-  <bpmn:message id="Message_17azfh0" name="Customer Details" />
+  <bpmn:message id="Message_17azfh0" name="warehousing details" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0315ffc">
-      <bpmndi:BPMNShape id="Participant_1s83qqu_di" bpmnElement="Participant_1">
+      <bpmndi:BPMNShape id="Participant_1s83qqu_di" bpmnElement="warehousing">
         <dc:Bounds x="123" y="158" width="1700" height="364" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Participant_1qxnkjn_di" bpmnElement="Participant_0ljzt6l">
@@ -171,19 +181,19 @@
       <bpmndi:BPMNEdge id="SequenceFlow_0001m8j_di" bpmnElement="SequenceFlow_0001m8j">
         <di:waypoint x="1036" y="287" />
         <di:waypoint x="1036" y="204" />
-        <di:waypoint x="928" y="204" />
+        <di:waypoint x="938" y="204" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1044" y="263" width="15" height="14" />
+          <dc:Bounds x="1045" y="263" width="14" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="IntermediateCatchEvent_10bdh13_di" bpmnElement="IntermediateThrowEvent_1">
-        <dc:Bounds x="892" y="186" width="36" height="36" />
+        <dc:Bounds x="902" y="186" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="867" y="229" width="86" height="14" />
+          <dc:Bounds x="877" y="229" width="86" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_07hbghf_di" bpmnElement="SequenceFlow_07hbghf">
-        <di:waypoint x="890" y="204" />
+        <di:waypoint x="902" y="204" />
         <di:waypoint x="775" y="204" />
         <di:waypoint x="775" y="272" />
       </bpmndi:BPMNEdge>
